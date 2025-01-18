@@ -1,24 +1,18 @@
 pipeline {
-    agent any  // This specifies that the pipeline will run on any available agent
+    agent any  // Use the 'any' agent, similar to the working App Engine pipeline
 
     environment {
-        // Docker Hub Credentials and Image Name
-        DOCKER_HUB_CREDENTIALS_USR = 'afroz2022'   // Your Docker Hub username
-        IMAGE_NAME = 'afroz2022/my-go-app'          // Your Docker image name
-        DOCKER_HUB_CREDENTIALS_PSWD = credentials('docker-hub-password')  // Your Docker Hub password credentials in Jenkins
-
-        // Google Cloud details
-        PROJECT_ID = 'my-first-devops-project-444911' // Your GCP Project ID
-        REGION = 'us-central1'                      // Replace with your desired GCP region (default: us-central1)
+        PROJECT_ID = 'my-first-devops-project-444911'  // GCP Project ID
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')  // Service account credentials
+        DOCKER_HUB_CREDENTIALS_USR = 'afroz2022'  // Your Docker Hub username
+        IMAGE_NAME = 'afroz2022/my-go-app'  // Docker image name
+        DOCKER_HUB_CREDENTIALS_PSWD = credentials('docker-hub-password')  // Docker Hub password credentials
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Clone Repository') {
             steps {
-                script {
-                    // Checkout code from GitHub repository (main branch)
-                    checkout scm
-                }
+                git branch: 'main', url: 'https://github.com/saleemafroze/cloudrun-2025.git'
             }
         }
 
@@ -38,7 +32,6 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
                     }
-
                     // Push the Docker image to Docker Hub
                     sh "docker push ${DOCKER_HUB_CREDENTIALS_USR}/${IMAGE_NAME}:${BUILD_NUMBER}"
                 }
@@ -57,7 +50,7 @@ pipeline {
                         sh "gcloud run deploy ${IMAGE_NAME} \
                             --image gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${BUILD_NUMBER} \
                             --platform managed \
-                            --region ${REGION} \
+                            --region us-central1 \
                             --allow-unauthenticated"
                     }
                 }
@@ -67,10 +60,16 @@ pipeline {
 
     post {
         always {
-            // Clean up the workspace after the job finishes (inside node block)
-            node('any') {  // Using 'any' label here
-                cleanWs()
-            }
+            echo 'Cleaning up...'
+            cleanWs()  // Clean up the workspace after the pipeline
+        }
+
+        success {
+            echo 'Deployment to Cloud Run successful!'
+        }
+
+        failure {
+            echo 'Deployment to Cloud Run failed!'
         }
     }
 }
