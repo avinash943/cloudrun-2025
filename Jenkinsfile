@@ -61,7 +61,10 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            cleanWs()  // Clean up the workspace after the pipeline
+            // Ensure workspace cleanup happens within a 'node' block
+            node {
+                cleanWs()  // Clean up the workspace after the pipeline
+            }
         }
 
         success {
