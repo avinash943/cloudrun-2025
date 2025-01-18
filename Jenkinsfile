@@ -68,7 +68,7 @@ pipeline {
     post {
         always {
             // Clean up the workspace after the job finishes (inside node block)
-            node {
+            node('any') { // Fix the missing 'label' issue by adding 'node('any')'
                 cleanWs()
             }
         }
