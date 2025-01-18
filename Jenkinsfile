@@ -67,8 +67,10 @@ pipeline {
 
     post {
         always {
-            // Clean up the workspace after the job finishes
-            cleanWs()
+            // Clean up the workspace after the job finishes (inside node block)
+            node {
+                cleanWs()
+            }
         }
     }
 }
