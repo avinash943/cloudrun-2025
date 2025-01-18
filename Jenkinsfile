@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any  // This specifies that the pipeline will run on any available agent
 
     environment {
         // Docker Hub Credentials and Image Name
@@ -68,7 +68,7 @@ pipeline {
     post {
         always {
             // Clean up the workspace after the job finishes (inside node block)
-            node {
+            node('any') {  // Using 'any' label here
                 cleanWs()
             }
         }
