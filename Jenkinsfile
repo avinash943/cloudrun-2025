@@ -8,7 +8,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS_PSWD = credentials('docker-hub-password')  // Your Docker Hub password credentials in Jenkins
 
         // Google Cloud details
-        PROJECT_ID = 'your-gcp-project-id'          // Replace with your GCP Project ID
+        PROJECT_ID = 'my-first-devops-project-444911' // Your GCP Project ID
         REGION = 'us-central1'                      // Replace with your desired GCP region (default: us-central1)
     }
 
@@ -16,7 +16,7 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 script {
-                    // Checkout code from GitHub
+                    // Checkout code from GitHub repository (main branch)
                     checkout scm
                 }
             }
@@ -67,8 +67,10 @@ pipeline {
 
     post {
         always {
-            // Clean up the workspace after the job finishes
-            cleanWs()
+            // Clean up the workspace after the job finishes (inside node block)
+            node {
+                cleanWs()
+            }
         }
     }
 }
