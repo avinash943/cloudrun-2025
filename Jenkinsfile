@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        // Docker Hub Credentials and Image Name
+        DOCKER_HUB_CREDENTIALS_USR = 'afroz2022'  // Your Docker Hub username
+        IMAGE_NAME = 'afroz2022/my-go-app'        // Your Docker image name
+        DOCKER_HUB_CREDENTIALS_PSWD = credentials('docker-hub-password')  // Your Docker Hub password credentials in Jenkins
+    }
+
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh "docker build -t ${DOCKER_HUB_CREDENTIALS_USR}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Login to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    }
+
+                    // Push the Docker image to Docker Hub
+                    sh "docker push ${DOCKER_HUB_CREDENTIALS_USR}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                }
+            }
+        }
+
+        stage('Deploy to Google Cloud Run') {
+            steps {
+                script {
+                    // Deploy the image to Google Cloud Run
+                    sh "gcloud run deploy ${IMAGE_NAME} \
+                        --image gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${BUILD_NUMBER} \
+                        --platform managed \
+                        --region ${REGION} \
+                        --allow-unauthenticated"
+                }
+            }
+        }
+    }
+}
