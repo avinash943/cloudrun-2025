@@ -52,6 +52,12 @@ pipeline {
                             --platform managed \
                             --region us-central1 \
                             --allow-unauthenticated"
+                        
+                        // Add IAM policy to allow public access to the Cloud Run service
+                        sh "gcloud run services add-iam-policy-binding ${IMAGE_NAME} \
+                            --region us-central1 \
+                            --member='allUsers' \
+                            --role='roles/run.invoker'"
                     }
                 }
             }
