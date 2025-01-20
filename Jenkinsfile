@@ -5,7 +5,7 @@ pipeline {
         PROJECT_ID = 'my-first-devops-project-444911'  // GCP Project ID
         GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')  // Service account credentials
         DOCKER_HUB_CREDENTIALS_USR = 'afroz2022'  // Your Docker Hub username
-        IMAGE_NAME = 'afroz2022/my-go-app'  // Docker image name
+        IMAGE_NAME = 'cloudrun/my-go-app'  // Docker image name
         DOCKER_HUB_CREDENTIALS_PSWD = credentials('docker-hub-password')  // Docker Hub password credentials
     }
 
