@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     // Authenticate with Google Cloud using the service account key stored in Jenkins
-                    withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         // Set GCP project
                         sh "gcloud config set project ${PROJECT_ID}"
 
