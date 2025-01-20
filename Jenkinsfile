@@ -56,20 +56,16 @@ pipeline {
                 }
             }
         }
-    }
 
-    post {
-        always {
-            echo 'Cleaning up...'
-            cleanWs()  // Clean up the workspace after the pipeline
-        }
-
-        success {
-            echo 'Deployment to Cloud Run successful!'
-        }
-
-        failure {
-            echo 'Deployment to Cloud Run failed!'
+        stage('Cleanup Workspace') {
+            steps {
+                script {
+                    // Clean up the workspace after the pipeline
+                    cleanWs()
+                }
+            }
         }
     }
+
+    // No 'post' block, manual cleanup done in the final stage
 }
