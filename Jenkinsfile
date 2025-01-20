@@ -46,9 +46,9 @@ pipeline {
                         // Set GCP project
                         sh "gcloud config set project ${PROJECT_ID}"
 
-                        // Deploy the Docker image to Google Cloud Run
+                        // Deploy the Docker image from Docker Hub to Google Cloud Run
                         sh "gcloud run deploy ${IMAGE_NAME} \
-                            --image gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${BUILD_NUMBER} \
+                            --image docker.io/${DOCKER_HUB_CREDENTIALS_USR}/${IMAGE_NAME}:${BUILD_NUMBER} \
                             --platform managed \
                             --region us-central1 \
                             --allow-unauthenticated"
